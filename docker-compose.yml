@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: ott-app-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ott_user
+      MONGO_INITDB_ROOT_PASSWORD: ott_password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  app:
+    build: .
+    container_name: ott-app
+    environment:
+      MONGODB_URI: mongodb://ott_user:ott_password@mongodb:27017/ott-app
+      NODE_ENV: development
+      PORT: 5000
+      JWT_SECRET: your_jwt_secret_key_here
+      JIOTV_API_KEY: your_jiotv_key
+      AIRTEL_API_KEY: your_airtel_key
+      TATAPLAY_API_KEY: your_tataplay_key
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/app
+
+volumes:
+  mongodb_data:
+
+networks:
+  default:
+    name: ott-network
